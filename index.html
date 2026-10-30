@@ -95,7 +95,7 @@ pre{white-space:pre-wrap;font:inherit;max-height:60vh;overflow:auto;margin:0 0 1
 <div class="ins" id="ins" hidden><img src="icon-192.png" alt=""><span id="it"></span><button class="b" id="ib" hidden>Pasang</button><button class="b o" id="in">Nanti</button></div>
 <div id="toast"></div>
 <script>
-const RUANG=["Rawat Inap Lantai 1","Rawat Inap Lantai 2","Rawat Inap Lantai 3","Ruang Intensif","Ruang Perinatologi","Ruang VK","IGD","Hemodialisa","Poliklinik"];
+const RUANG=["Rawat Inap Lantai 1","Rawat Inap Lantai 2","Rawat Inap Lantai 3","Ruang Intensif","Ruang Perinatologi","Ruang VK","IGD","Unit Dialisis","Poliklinik"];
 const SH=[["pagi","Pagi","07.30-13.30"],["sore","Sore","13.30-19.30"],["malam","Malam","19.30-07.30"]];
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const LS=k=>{try{return JSON.parse(localStorage.getItem("shnd_"+k))}catch(e){return null}};
@@ -120,14 +120,14 @@ const PAY=[["umum","Umum"],["asuransi","Asuransi"],["iks","IKS"],["she","SHE"],[
 const SL={pagi:"Pagi",sore:"Sore",malam:"Malam",midle:"Midle",cito:"Cito"},TN4=[["",null,["pagi","sore","midle","malam"]]];
 const J={
  igd:{sh:S3,tot:1,it:[["pasien","Jumlah Pasien",PAY],["infus","Pasang Infus"],["cath","Pasang Catheter"],["oncall","On Call"],["mrs","Jumlah Pasien MRS",PAY],["ok","Jumlah Pasien OK",[["mrs","MRS"],["odc","ODC"]]],["eswl","Jumlah Pasien ESWL",PAY],["pulang","Jumlah Pasien Pulang"],["meninggal","Jumlah Pasien Meninggal",0,1],["doa","Jumlah Pasien DOA",0,1],["rujuk","Jumlah Pasien yang Dirujuk",0,1],["terima","Jumlah Menerima Rujukan Pasien dari RS Lain",0,1],["transit","Jumlah Pasien Transit",0,1],["emerg","Jumlah Pasien Emergency",PAY],["false","Jumlah Pasien False Emergency",PAY],["o2","Jumlah Pasien Memakai Oksigen"]],tn:TN4},
- hd:{sh:["pagi","sore","cito"],it:[["pasien","Jumlah Pasien",PAYT],["hd","Jumlah Tindakan HD",PAY],["capd","Jumlah Tindakan CAPD",PAY],["dl","Pasang Double Lumen"],["av","Pasang AV Shunt"],["mrs","Jumlah Pasien MRS",PAY],["pulang","Jumlah Pasien Pulang"],["o2","Jumlah Pasien Memakai Oksigen"],["hb","Jumlah Pasien yang Mendapatkan Obat Hb"],["trf","Jumlah Pasien yang Mendapatkan Transfusi"]],tn:[["",null,["pagi","sore","cito"]]]},
+ hd:{sh:["pagi","sore","cito"],it:[["pasien","Jumlah Pasien",PAYT],["hd","Jumlah Tindakan HD",PAY],["capd","Jumlah Tindakan CAPD",PAY],["dl","Akses Double Lumen"],["av","Akses AV Shunt"],["mrs","Jumlah Pasien MRS",PAY],["pulang","Jumlah Pasien Pulang"],["igd","Jumlah Pasien yang Ditransfer ke IGD"],["o2","Jumlah Pasien Memakai Oksigen"],["hb","Jumlah Pasien yang Mendapatkan Obat EPO"],["trf","Jumlah Pasien yang Mendapatkan Transfusi"]],tn:[["",null,["pagi","sore","cito"]]]},
  ok:{sh:S3,it:[["pasien","Jumlah Pasien",PAY],["elektif","Jumlah Tindakan Elektif",PAY],["cito","Jumlah Tindakan Cito",PAY],["stwc","Jumlah Tindakan STWC",PAY],["mrs","Jumlah Pasien MRS",PAY],["pulang","Jumlah Pasien Pulang"]],tn:[["bedah","Bedah",S3],["anestesi","Anestesi",S3]]},
  bayi:{sh:S3,it:[["pasien","Jumlah Pasien",PAY],["status","Status Bayi",[["sehat","Bayi Sehat"],["nicu","NICU"],["resti","Bayi Resti"],["foto","Fototerapi"]]],["shk","Jumlah Tindakan SHK",PAY],["infus","Jumlah Pasien Pasang Infus"],["vent","Jumlah Pasien Pasang Ventilator"],["cpap","Jumlah Pasien Pasang CPAP"],["pulang","Jumlah Pasien Pulang"],["rujuk","Jumlah Pasien Dirujuk",PAY],["o2","Jumlah Pasien Memakai Oksigen"],["trf","Jumlah Pasien yang Mendapatkan Transfusi"]],tn:[["",null,S3]]},
  vk:{sh:S3,it:[["pasien","Jumlah Pasien",PAY],["normal","Jumlah Tindakan Persalinan Normal",PAY],["sc","Jumlah Tindakan Persalinan SC",PAY],["pato","Jumlah Tindakan Persalinan Patologi",PAY],["gynp","Jumlah Pasien Gynecology"],["gynt","Jumlah Tindakan Gynecology",PAY],["infus","Jumlah Pasien Pasang Infus"],["cath","Jumlah Pasien Pasang Catheter"],["mrs","Jumlah Pasien MRS",PAY],["pulang","Jumlah Pasien Pulang"],["o2","Jumlah Pasien Memakai Oksigen"],["trf","Jumlah Pasien yang Mendapatkan Transfusi"]],tn:[["",null,S3]]},
  poli:{sh:[],it:[],tn:TN4}};
-const RFMT={"Ruang Perinatologi":"bayi","Ruang VK":"vk","IGD":"igd","Hemodialisa":"hd","Poliklinik":"poli"},fmtOf=n=>RFMT[n]||"ri";
-const SHEET={ri:"Rekap Laporan",igd:"Rekap IGD",hd:"Rekap Hemodialisis",ok:"Rekap Ruang Operasi",bayi:"Rekap Neonatus",vk:"Rekap Ruang Bersalin",poli:"Rekap Poliklinik"};
-const XN={ri:"Rawat Inap",igd:"IGD",hd:"Hemodialisis",ok:"Operasi dan Bedah",bayi:"Neonatus",vk:"Ruang Bersalin",poli:"Poliklinik"};
+const RFMT={"Ruang Perinatologi":"bayi","Ruang VK":"vk","IGD":"igd","Unit Dialisis":"hd","Poliklinik":"poli"},fmtOf=n=>RFMT[n]||"ri";
+const SHEET={ri:"Rekap Laporan",igd:"Rekap IGD",hd:"Rekap Unit Dialisis",ok:"Rekap Ruang Operasi",bayi:"Rekap Neonatus",vk:"Rekap Ruang Bersalin",poli:"Rekap Poliklinik"};
+const XN={ri:"Rawat Inap",igd:"IGD",hd:"Unit Dialisis",ok:"Operasi dan Bedah",bayi:"Neonatus",vk:"Ruang Bersalin",poli:"Poliklinik"};
 const SP=["SP THT","OBGYN","BEDAH UMUM","BEDAH ANAK","BEDAH SARAF","BEDAH UROLOGI","BEDAH ONCOLOGI","BEDAH TULANG","BEDAH DIGESTIF","BEDAH THORAX","BEDAH PLASTK","SP SARAF","INTERNA","SP ANAK","SP KULIT KELAMIN","SP MATA","SP PARU","SP JANTUNG","SP JIWA","SP GIZI KLINIK","HEMATOLOGI ONK"];
 const TP=["POLI UMUM DAN IKS","POLI SPESIALIS","POLI GIGI","POLI FISIOTERAPI","REHAB MEDIK","POLI GIGI SPESIALIS","POLI GIGI SPESIALIS EDONDONSI","POLI GIGI SPESIALIS PERIODONTI","POLI GIGI SPESIALIS PEDODONTIS","IMUNISASI"],PP=[["iks","IKS"],["hc","HC"],["umum","UMUM"],["bpjs","BPJS"]];
 const IKPS=[["kpcs","KPCS"],["knc","KNC"],["ktc","KTC"],["ktd","KTD"],["sentinel","SENTINEL"]];
@@ -174,8 +174,8 @@ function buildForm(f="ri"){curFmt=f;const ri=f==="ri";
  ${[["planning","Planning (perencanaan)"],["organizing","Organizing (pengorganisasian)"],["directing","Directing (pengarahan)"],["controlling","Controlling (pengawasan dan audit)"],["evaluating","Evaluating (evaluasi)"]].map(([k,l])=>A("mj."+k,l+" - kegiatan")).join("")}
  ${secIKP()}<h2>IV. Masalah khusus &amp; rencana tindak lanjut</h2>${A("masalah","Masalah klinis / manajerial")}${A("rtl","Rencana tindak lanjut (RTL)")}
  <h2>V. Fasilitas alkes dan non alkes</h2>
- <div class="card"><b>Alkes</b>${A("alkes.kondisi","Kondisi")}${A("alkes.masalah","Masalah")}</div>
- <div class="card"><b>Non alkes</b>${A("nonalkes.kondisi","Kondisi")}${A("nonalkes.masalah","Masalah")}</div>
+ <div class="card"><b>Alkes</b>${A("alkes.kondisi","Kondisi")}${A("alkes.masalah","Masalah")}${A("alkes.mesin","Mesin")}</div>
+ <div class="card"><b>Non alkes</b>${A("nonalkes.kondisi","Kondisi")}${A("nonalkes.masalah","Masalah")}${A("nonalkes.mesin","Mesin")}</div>
  <p><button class="b" type="submit">Simpan laporan</button> <button class="b o" type="button" id="rs">Kosongkan</button></p>`;
  $("#rs").onclick=()=>fillForm({});
  $("#f").oninput=e=>{calcBor();calcTot();const t=e.target;if(t.classList&&t.classList.contains("ag")){t.style.height="auto";t.style.height=Math.max(t.scrollHeight,+t.dataset.min||130)+"px"}};
@@ -218,7 +218,7 @@ function toTextRI(r){const L=[],P=x=>L.push(x),m=r.mj||{},k=r.skp||{};
  P("# II. IMPLEMENTASI FUNGSI MANAJEMEN KEPALA RUANGAN");[["planning","PLANNING"],["organizing","ORGANIZING"],["directing","DIRECTING"],["controlling","CONTROLLING"],["evaluating","EVALUATING"]].forEach(([a,b])=>{P(b);P("Kegiatan: "+v(m[a]))});
  P("# III. MONITORING SASARAN KESELAMATAN PASIEN (SKP)");P("SKP 1 Identifikasi Pasien: "+v(k.s1));P("SKP 2 Komunikasi Efektif: "+v(k.s2));P("SKP 3 High-Alert Medications: "+v(k.s3));P("SKP 5 Pencegahan Infeksi/HAIs: "+v(k.s5));P("SKP 6 Risiko Jatuh: "+v(k.s6));
  P("# IV. MASALAH KHUSUS & RENCANA TINDAK LANJUT (RTL)");P("Masalah Klinis/Manajerial: "+v(r.masalah));P("RTL: "+v(r.rtl));
- P("# V. LAPORAN FASILITAS ALKES DAN NONALKES");P("ALKES - Kondisi: "+v(getP(r,"alkes.kondisi")));P("ALKES - Masalah: "+v(getP(r,"alkes.masalah")));P("NON ALKES - Kondisi: "+v(getP(r,"nonalkes.kondisi")));P("NON ALKES - Masalah: "+v(getP(r,"nonalkes.masalah")));
+ P("# V. LAPORAN FASILITAS ALKES DAN NONALKES");P("ALKES - Kondisi: "+v(getP(r,"alkes.kondisi")));P("ALKES - Masalah: "+v(getP(r,"alkes.masalah")));P("ALKES - Mesin: "+v(getP(r,"alkes.mesin")));P("NON ALKES - Kondisi: "+v(getP(r,"nonalkes.kondisi")));P("NON ALKES - Masalah: "+v(getP(r,"nonalkes.masalah")));P("NON ALKES - Mesin: "+v(getP(r,"nonalkes.mesin")));
  return L.join("\n")}
 
 const vj=(r,p)=>v(getP(r,p));
@@ -263,7 +263,7 @@ function renderRI(r){
  sec("II","Implementasi Fungsi Manajemen",[["planning","Planning (Perencanaan)"],["organizing","Organizing (Pengorganisasian)"],["directing","Directing (Pengarahan)"],["controlling","Controlling (Pengawasan dan Audit)"],["evaluating","Evaluating (Evaluasi)"]].map(([a,b])=>tx(b,m[a])).join(""))+
  sec("III","Monitoring Sasaran Keselamatan Pasien",`<div class="kv">${[["SKP 1 · Identifikasi pasien",k.s1],["SKP 2 · Komunikasi efektif",k.s2],["SKP 3 · High-alert medications",k.s3],["SKP 5 · Pencegahan infeksi / HAIs",k.s5],["SKP 6 · Risiko jatuh",k.s6]].map(([a,b])=>`<span>${a}</span>${bd(b)}`).join("")}</div>`)+
  sec("IV","Masalah Khusus &amp; Rencana Tindak Lanjut",tx("Masalah klinis / manajerial",r.masalah,1)+tx("Rencana tindak lanjut (RTL)",r.rtl))+
- sec("V","Fasilitas Alkes dan Non Alkes",`<div class="two"><div><b>Alkes</b>${tx("Kondisi",al.kondisi)}${tx("Masalah",al.masalah,1)}</div><div><b>Non alkes</b>${tx("Kondisi",na.kondisi)}${tx("Masalah",na.masalah,1)}</div></div>`)+`</div>`}
+ sec("V","Fasilitas Alkes dan Non Alkes",`<div class="two"><div><b>Alkes</b>${tx("Kondisi",al.kondisi)}${tx("Masalah",al.masalah,1)}${tx("Mesin",al.mesin,1)}</div><div><b>Non alkes</b>${tx("Kondisi",na.kondisi)}${tx("Masalah",na.masalah,1)}${tx("Mesin",na.mesin,1)}</div></div>`)+`</div>`}
 
 function ptab(r,b,names){const rows=[],col=Array(9).fill(0);names.forEach((n,i)=>{const vals=[];PP.forEach(([k])=>["p","s"].forEach(s=>vals.push(getP(r,`${b}${i}.${k}.${s}`))));if(!vals.some(x=>x!==undefined&&x!==""))return;vals.forEach((x,j)=>col[j]+=nv(x));const t=vals.reduce((a,x)=>a+nv(x),0);col[8]+=t;rows.push([n,...vals.map(x=>num(x)),`<b>${t}</b>`])});
  if(!rows.length)return'<p class="hint">Belum ada data diisi.</p>';rows.push(["<b>JUMLAH</b>",...col.map(x=>`<b>${x}</b>`)]);return tbl(["IKS P","IKS S","HC P","HC S","UMUM P","UMUM S","BPJS P","BPJS S","Jumlah"],rows)}
@@ -305,7 +305,7 @@ function XCri(){const c=[],a=(g,l,f)=>c.push({g,l,f}),P=p=>r=>getP(r,p);
  [["planning","Planning (Perencanaan)"],["organizing","Organizing (Pengorganisasian)"],["directing","Directing (Pengarahan)"],["controlling","Controlling (Pengawasan dan Audit)"],["evaluating","Evaluating (Evaluasi)"]].forEach(([f,t])=>a("II. Fungsi Manajemen - Kegiatan",t,P("mj."+f)));
  [["s1","SKP 1 Identifikasi Pasien"],["s2","SKP 2 Komunikasi Efektif"],["s3","SKP 3 High-Alert Medications"],["s5","SKP 5 Pencegahan Infeksi/HAIs"],["s6","SKP 6 Risiko Jatuh"]].forEach(([f,t])=>a("III. Sasaran Keselamatan Pasien (SKP)",t,P("skp."+f)));
  a("IV. Masalah Khusus & RTL","Masalah Klinis/Manajerial",r=>r.masalah);a("IV. Masalah Khusus & RTL","Rencana Tindak Lanjut (RTL)",r=>r.rtl);
- [["alkes.kondisi","Alkes - Kondisi"],["alkes.masalah","Alkes - Masalah"],["nonalkes.kondisi","Non Alkes - Kondisi"],["nonalkes.masalah","Non Alkes - Masalah"]].forEach(([p,t])=>a("V. Fasilitas Alkes dan Non Alkes",t,P(p)));
+ [["alkes.kondisi","Alkes - Kondisi"],["alkes.masalah","Alkes - Masalah"],["alkes.mesin","Alkes - Mesin"],["nonalkes.kondisi","Non Alkes - Kondisi"],["nonalkes.masalah","Non Alkes - Masalah"],["nonalkes.mesin","Non Alkes - Mesin"]].forEach(([p,t])=>a("V. Fasilitas Alkes dan Non Alkes",t,P(p)));
  a("Sistem","Diperbarui",r=>r.ts?new Date(r.ts).toLocaleString("id-ID"):"");return c}
 const IKPC=c=>{IKPS.forEach(([k,l])=>c.push({g:"III. Insiden Keselamatan Pasien (IKP)",l,f:r=>getP(r,"ikp."+k)}));IKPS.forEach(([k,l])=>c.push({g:"III. Deskripsi Insiden",l:"Deskripsi "+l,f:r=>getP(r,"ikpd."+k)}));SKPN.forEach(([k,l])=>c.push({g:"III. SKP yang Menjadi Insiden",l,f:r=>getP(r,"skpi."+k)}))};
 function XC(f="ri"){const c0=XCri();if(f==="ri"){const o=[];let d=0;c0.forEach(x=>{if(/^III\./.test(x.g)){if(!d){d=1;IKPC(o)}}else o.push(x)});return o}const c=[],a=(g,l,fn)=>c.push({g,l,f:fn}),P=p=>r=>getP(r,p),D=J[f];
