@@ -173,9 +173,10 @@ function buildForm(f="ri"){curFmt=f;const ri=f==="ri";
  ${ri?secRI():f==="poli"?secPoli():secJ(f)}<h2>II. Fungsi manajemen kepala ruangan</h2>
  ${[["planning","Planning (perencanaan)"],["organizing","Organizing (pengorganisasian)"],["directing","Directing (pengarahan)"],["controlling","Controlling (pengawasan dan audit)"],["evaluating","Evaluating (evaluasi)"]].map(([k,l])=>A("mj."+k,l+" - kegiatan")).join("")}
  ${secIKP()}<h2>IV. Masalah khusus &amp; rencana tindak lanjut</h2>${A("masalah","Masalah klinis / manajerial")}${A("rtl","Rencana tindak lanjut (RTL)")}
- <h2>V. Fasilitas alkes dan non alkes</h2>
- <div class="card"><b>Alkes</b>${A("alkes.kondisi","Kondisi")}${A("alkes.masalah","Masalah")}${A("alkes.mesin","Mesin")}</div>
- <div class="card"><b>Non alkes</b>${A("nonalkes.kondisi","Kondisi")}${A("nonalkes.masalah","Masalah")}${A("nonalkes.mesin","Mesin")}</div>
+ <h2>V. Fasilitas alkes, non alkes dan mesin</h2>
+ <div class="card"><b>Alkes</b>${A("alkes.kondisi","Kondisi")}${A("alkes.masalah","Masalah")}</div>
+ <div class="card"><b>Non alkes</b>${A("nonalkes.kondisi","Kondisi")}${A("nonalkes.masalah","Masalah")}</div>
+ <div class="card"><b>Mesin</b>${A("mesin.kondisi","Kondisi")}${A("mesin.masalah","Masalah")}</div>
  <p><button class="b" type="submit">Simpan laporan</button> <button class="b o" type="button" id="rs">Kosongkan</button></p>`;
  $("#rs").onclick=()=>fillForm({});
  $("#f").oninput=e=>{calcBor();calcTot();const t=e.target;if(t.classList&&t.classList.contains("ag")){t.style.height="auto";t.style.height=Math.max(t.scrollHeight,+t.dataset.min||130)+"px"}};
@@ -208,7 +209,7 @@ function ring(r){const st=stAll(r);return{pasien:pas(r)??"",bor:last(r).bor??"",
 function flags(r){const f=[],k=r.skp||{};if(ring(r).tenaga==="Kurang Tenaga")f.push("Kurang tenaga");
  if(k.s1==="<100%"||k.s2==="Tidak"||k.s3==="Tidak"||k.s5==="Cukup"||k.s5==="Kurang")f.push("SKP");
  if(Object.values(r.ikp||{}).some(x=>+x>0)||Object.values(r.skpi||{}).some(Boolean)||Object.values(r.ikpd||{}).some(Boolean))f.push("Insiden");
- if(r.masalah)f.push("Masalah");if(getP(r,"alkes.masalah")||getP(r,"nonalkes.masalah"))f.push("Alkes/Non alkes");return f}
+ if(r.masalah)f.push("Masalah");if(getP(r,"alkes.masalah")||getP(r,"nonalkes.masalah")||getP(r,"mesin.masalah"))f.push("Alkes/Non alkes/Mesin");return f}
 function toTextRI(r){const L=[],P=x=>L.push(x),m=r.mj||{},k=r.skp||{};
  P("# LAPORAN HARIAN KEPALA RUANGAN");P("RSU SURYA HUSADHA NUSA DUA");P("Hari / Tanggal: "+tglID(r.tanggal));P("Nama Kepala Ruangan: "+v(r.kepala));P("Ruang Rawat Inap: "+r.ruang);P("Metode Asuhan Keperawatan: "+v(r.metode));
  P("# I. DATA SITUASIONAL & MANAJEMEN KETENAGAAN (STAFFING)");P("1. Sensus Mutasi Pasien");
@@ -218,7 +219,7 @@ function toTextRI(r){const L=[],P=x=>L.push(x),m=r.mj||{},k=r.skp||{};
  P("# II. IMPLEMENTASI FUNGSI MANAJEMEN KEPALA RUANGAN");[["planning","PLANNING"],["organizing","ORGANIZING"],["directing","DIRECTING"],["controlling","CONTROLLING"],["evaluating","EVALUATING"]].forEach(([a,b])=>{P(b);P("Kegiatan: "+v(m[a]))});
  P("# III. MONITORING SASARAN KESELAMATAN PASIEN (SKP)");P("SKP 1 Identifikasi Pasien: "+v(k.s1));P("SKP 2 Komunikasi Efektif: "+v(k.s2));P("SKP 3 High-Alert Medications: "+v(k.s3));P("SKP 5 Pencegahan Infeksi/HAIs: "+v(k.s5));P("SKP 6 Risiko Jatuh: "+v(k.s6));
  P("# IV. MASALAH KHUSUS & RENCANA TINDAK LANJUT (RTL)");P("Masalah Klinis/Manajerial: "+v(r.masalah));P("RTL: "+v(r.rtl));
- P("# V. LAPORAN FASILITAS ALKES DAN NONALKES");P("ALKES - Kondisi: "+v(getP(r,"alkes.kondisi")));P("ALKES - Masalah: "+v(getP(r,"alkes.masalah")));P("ALKES - Mesin: "+v(getP(r,"alkes.mesin")));P("NON ALKES - Kondisi: "+v(getP(r,"nonalkes.kondisi")));P("NON ALKES - Masalah: "+v(getP(r,"nonalkes.masalah")));P("NON ALKES - Mesin: "+v(getP(r,"nonalkes.mesin")));
+ P("# V. LAPORAN FASILITAS ALKES, NONALKES DAN MESIN");P("ALKES - Kondisi: "+v(getP(r,"alkes.kondisi")));P("ALKES - Masalah: "+v(getP(r,"alkes.masalah")));P("NON ALKES - Kondisi: "+v(getP(r,"nonalkes.kondisi")));P("NON ALKES - Masalah: "+v(getP(r,"nonalkes.masalah")));P("MESIN - Kondisi: "+v(getP(r,"mesin.kondisi")));P("MESIN - Masalah: "+v(getP(r,"mesin.masalah")));
  return L.join("\n")}
 
 const vj=(r,p)=>v(getP(r,p));
@@ -251,7 +252,7 @@ const tbl=(h,rows)=>`<table><thead><tr><th></th>${h.map(x=>`<th>${x}</th>`).join
 const tx=(l,x,w)=>`<div class="tx${w&&x?" w":""}"><small>${l}</small>${x?esc(x):"-"}</div>`;
 const sec=(n,t,b)=>`<div class="rs"><h4><i>${n}</i>${t}</h4>${b}</div>`;
 function renderRI(r){
- const q=lastKg(r),k=r.skp||{},m=r.mj||{},tn=r.tn||{},l=last(r),f=flags(r),al=r.alkes||{},na=r.nonalkes||{};
+ const q=lastKg(r),k=r.skp||{},m=r.mj||{},tn=r.tn||{},l=last(r),f=flags(r),al=r.alkes||{},na=r.nonalkes||{},ms=r.mesin||{};
  const sh=SH.map(([s])=>r[s]||{}),tt=SH.map(([s])=>tn[s]||{}),hd=SH.map(([,a,t])=>`${a}<br><small>${t}</small>`),hd2=SH.map(([,a])=>"Dinas "+a);
  const R=(a,fn)=>[a,...sh.map(fn)],T=(a,fn)=>[a,...tt.map(fn)];
  return `<div class="rh"><h3>${esc(r.ruang)}</h3><p>${tglID(r.tanggal)} · Kepala ruangan: ${esc(v(r.kepala))} · Metode: ${esc(v(r.metode))}</p></div><div class="rb">
@@ -263,7 +264,7 @@ function renderRI(r){
  sec("II","Implementasi Fungsi Manajemen",[["planning","Planning (Perencanaan)"],["organizing","Organizing (Pengorganisasian)"],["directing","Directing (Pengarahan)"],["controlling","Controlling (Pengawasan dan Audit)"],["evaluating","Evaluating (Evaluasi)"]].map(([a,b])=>tx(b,m[a])).join(""))+
  sec("III","Monitoring Sasaran Keselamatan Pasien",`<div class="kv">${[["SKP 1 · Identifikasi pasien",k.s1],["SKP 2 · Komunikasi efektif",k.s2],["SKP 3 · High-alert medications",k.s3],["SKP 5 · Pencegahan infeksi / HAIs",k.s5],["SKP 6 · Risiko jatuh",k.s6]].map(([a,b])=>`<span>${a}</span>${bd(b)}`).join("")}</div>`)+
  sec("IV","Masalah Khusus &amp; Rencana Tindak Lanjut",tx("Masalah klinis / manajerial",r.masalah,1)+tx("Rencana tindak lanjut (RTL)",r.rtl))+
- sec("V","Fasilitas Alkes dan Non Alkes",`<div class="two"><div><b>Alkes</b>${tx("Kondisi",al.kondisi)}${tx("Masalah",al.masalah,1)}${tx("Mesin",al.mesin,1)}</div><div><b>Non alkes</b>${tx("Kondisi",na.kondisi)}${tx("Masalah",na.masalah,1)}${tx("Mesin",na.mesin,1)}</div></div>`)+`</div>`}
+ sec("V","Fasilitas Alkes, Non Alkes dan Mesin",`<div class="two"><div><b>Alkes</b>${tx("Kondisi",al.kondisi)}${tx("Masalah",al.masalah,1)}</div><div><b>Non alkes</b>${tx("Kondisi",na.kondisi)}${tx("Masalah",na.masalah,1)}</div><div><b>Mesin</b>${tx("Kondisi",ms.kondisi)}${tx("Masalah",ms.masalah,1)}</div></div>`)+`</div>`}
 
 function ptab(r,b,names){const rows=[],col=Array(9).fill(0);names.forEach((n,i)=>{const vals=[];PP.forEach(([k])=>["p","s"].forEach(s=>vals.push(getP(r,`${b}${i}.${k}.${s}`))));if(!vals.some(x=>x!==undefined&&x!==""))return;vals.forEach((x,j)=>col[j]+=nv(x));const t=vals.reduce((a,x)=>a+nv(x),0);col[8]+=t;rows.push([n,...vals.map(x=>num(x)),`<b>${t}</b>`])});
  if(!rows.length)return'<p class="hint">Belum ada data diisi.</p>';rows.push(["<b>JUMLAH</b>",...col.map(x=>`<b>${x}</b>`)]);return tbl(["IKS P","IKS S","HC P","HC S","UMUM P","UMUM S","BPJS P","BPJS S","Jumlah"],rows)}
@@ -305,7 +306,7 @@ function XCri(){const c=[],a=(g,l,f)=>c.push({g,l,f}),P=p=>r=>getP(r,p);
  [["planning","Planning (Perencanaan)"],["organizing","Organizing (Pengorganisasian)"],["directing","Directing (Pengarahan)"],["controlling","Controlling (Pengawasan dan Audit)"],["evaluating","Evaluating (Evaluasi)"]].forEach(([f,t])=>a("II. Fungsi Manajemen - Kegiatan",t,P("mj."+f)));
  [["s1","SKP 1 Identifikasi Pasien"],["s2","SKP 2 Komunikasi Efektif"],["s3","SKP 3 High-Alert Medications"],["s5","SKP 5 Pencegahan Infeksi/HAIs"],["s6","SKP 6 Risiko Jatuh"]].forEach(([f,t])=>a("III. Sasaran Keselamatan Pasien (SKP)",t,P("skp."+f)));
  a("IV. Masalah Khusus & RTL","Masalah Klinis/Manajerial",r=>r.masalah);a("IV. Masalah Khusus & RTL","Rencana Tindak Lanjut (RTL)",r=>r.rtl);
- [["alkes.kondisi","Alkes - Kondisi"],["alkes.masalah","Alkes - Masalah"],["alkes.mesin","Alkes - Mesin"],["nonalkes.kondisi","Non Alkes - Kondisi"],["nonalkes.masalah","Non Alkes - Masalah"],["nonalkes.mesin","Non Alkes - Mesin"]].forEach(([p,t])=>a("V. Fasilitas Alkes dan Non Alkes",t,P(p)));
+ [["alkes.kondisi","Alkes - Kondisi"],["alkes.masalah","Alkes - Masalah"],["nonalkes.kondisi","Non Alkes - Kondisi"],["nonalkes.masalah","Non Alkes - Masalah"],["mesin.kondisi","Mesin - Kondisi"],["mesin.masalah","Mesin - Masalah"]].forEach(([p,t])=>a("V. Fasilitas Alkes dan Non Alkes",t,P(p)));
  a("Sistem","Diperbarui",r=>r.ts?new Date(r.ts).toLocaleString("id-ID"):"");return c}
 const IKPC=c=>{IKPS.forEach(([k,l])=>c.push({g:"III. Insiden Keselamatan Pasien (IKP)",l,f:r=>getP(r,"ikp."+k)}));IKPS.forEach(([k,l])=>c.push({g:"III. Deskripsi Insiden",l:"Deskripsi "+l,f:r=>getP(r,"ikpd."+k)}));SKPN.forEach(([k,l])=>c.push({g:"III. SKP yang Menjadi Insiden",l,f:r=>getP(r,"skpi."+k)}))};
 function XC(f="ri"){const c0=XCri();if(f==="ri"){const o=[];let d=0;c0.forEach(x=>{if(/^III\./.test(x.g)){if(!d){d=1;IKPC(o)}}else o.push(x)});return o}const c=[],a=(g,l,fn)=>c.push({g,l,f:fn}),P=p=>r=>getP(r,p),D=J[f];
