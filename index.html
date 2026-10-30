@@ -95,7 +95,7 @@ pre{white-space:pre-wrap;font:inherit;max-height:60vh;overflow:auto;margin:0 0 1
 <div class="ins" id="ins" hidden><img src="icon-192.png" alt=""><span id="it"></span><button class="b" id="ib" hidden>Pasang</button><button class="b o" id="in">Nanti</button></div>
 <div id="toast"></div>
 <script>
-const RUANG=["Rawat Inap Lantai 1","Rawat Inap Lantai 2","Rawat Inap Lantai 3","Ruang Intensif","Ruang Perinatologi","IGD","Hemodialisa","Poliklinik"];
+const RUANG=["Rawat Inap Lantai 1","Rawat Inap Lantai 2","Rawat Inap Lantai 3","Ruang Intensif","Ruang Perinatologi","Ruang VK","IGD","Hemodialisa","Poliklinik"];
 const SH=[["pagi","Pagi","07.30-13.30"],["sore","Sore","13.30-19.30"],["malam","Malam","19.30-07.30"]];
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const LS=k=>{try{return JSON.parse(localStorage.getItem("shnd_"+k))}catch(e){return null}};
@@ -125,7 +125,7 @@ const J={
  bayi:{sh:S3,it:[["pasien","Jumlah Pasien",PAY],["status","Status Bayi",[["sehat","Bayi Sehat"],["nicu","NICU"],["resti","Bayi Resti"],["foto","Fototerapi"]]],["shk","Jumlah Tindakan SHK",PAY],["infus","Jumlah Pasien Pasang Infus"],["vent","Jumlah Pasien Pasang Ventilator"],["cpap","Jumlah Pasien Pasang CPAP"],["pulang","Jumlah Pasien Pulang"],["rujuk","Jumlah Pasien Dirujuk",PAY],["o2","Jumlah Pasien Memakai Oksigen"],["trf","Jumlah Pasien yang Mendapatkan Transfusi"]],tn:[["",null,S3]]},
  vk:{sh:S3,it:[["pasien","Jumlah Pasien",PAY],["normal","Jumlah Tindakan Persalinan Normal",PAY],["sc","Jumlah Tindakan Persalinan SC",PAY],["pato","Jumlah Tindakan Persalinan Patologi",PAY],["gynp","Jumlah Pasien Gynecology"],["gynt","Jumlah Tindakan Gynecology",PAY],["infus","Jumlah Pasien Pasang Infus"],["cath","Jumlah Pasien Pasang Catheter"],["mrs","Jumlah Pasien MRS",PAY],["pulang","Jumlah Pasien Pulang"],["o2","Jumlah Pasien Memakai Oksigen"],["trf","Jumlah Pasien yang Mendapatkan Transfusi"]],tn:[["",null,S3]]},
  poli:{sh:[],it:[],tn:TN4}};
-const RFMT={"Ruang Perinatologi":"bayi","IGD":"igd","Hemodialisa":"hd","Poliklinik":"poli"},fmtOf=n=>RFMT[n]||"ri";
+const RFMT={"Ruang Perinatologi":"bayi","Ruang VK":"vk","IGD":"igd","Hemodialisa":"hd","Poliklinik":"poli"},fmtOf=n=>RFMT[n]||"ri";
 const SHEET={ri:"Rekap Laporan",igd:"Rekap IGD",hd:"Rekap Hemodialisis",ok:"Rekap Ruang Operasi",bayi:"Rekap Neonatus",vk:"Rekap Ruang Bersalin",poli:"Rekap Poliklinik"};
 const XN={ri:"Rawat Inap",igd:"IGD",hd:"Hemodialisis",ok:"Operasi dan Bedah",bayi:"Neonatus",vk:"Ruang Bersalin",poli:"Poliklinik"};
 const SP=["SP THT","OBGYN","BEDAH UMUM","BEDAH ANAK","BEDAH SARAF","BEDAH UROLOGI","BEDAH ONCOLOGI","BEDAH TULANG","BEDAH DIGESTIF","BEDAH THORAX","BEDAH PLASTK","SP SARAF","INTERNA","SP ANAK","SP KULIT KELAMIN","SP MATA","SP PARU","SP JANTUNG","SP JIWA","SP GIZI KLINIK","HEMATOLOGI ONK"];
