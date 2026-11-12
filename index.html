@@ -262,7 +262,7 @@ function mpOpen(k){mpInit();MP={k};const sl=(SH.find(x=>x[0]===k)||[])[1];$("#mp
 const lamaM=x=>{let m={};try{m=JSON.parse(x.lama_memo||"{}")||{}}catch(e){}return String(x.lama_kamar||"").split(",").map(t=>t.trim()).filter(Boolean).map(b=>m[b]?`${b} (${m[b]})`:b).join("; ")||(x.lama_ket||"")};
 const mppK=x=>{let o={};try{o=JSON.parse(x.mpp_ket||"{}")||{}}catch(e){}return String(x.mpp_kamar||"").split(",").map(t=>t.trim()).filter(Boolean).map(r=>`${r}: ${(o[r]||[]).map(i=>MPPC[i]).filter(Boolean).join(", ")||"-"}`).join("; ")};
 function kpRecalc(){if(curFmt!=="ri")return;jgRender();mpRender();const all=kAll($('[name="ruang"]').value);if(!all.length)return;
- SH.forEach(([k],i)=>{const aw=$(`[name="${k}.awal"]`),ah=$(`[name="${k}.awal_kamar"]`);if(!aw||!ah)return;let clr=false;
+ SH.forEach(([k],i)=>{const aw=$(`[name="${k}.awal"]`),ah=$(`[name="${k}.awal_kamar"]`);if(!aw||!ah)return;let clr=false;if(aw.value===""&&!ah.value)aw.value="0";if(aw.value===""&&!ah.value)aw.value="0";
   
   const A=kl(k,"awal"),M=kl(k,"masuk"),X=KX.flatMap(f=>kl(k,f));if(A.length||M.length||X.length){const h=$(`[name="${k}.kamar"]`);if(h)h.value=all.filter(v=>(A.includes(v)||M.includes(v))&&!X.includes(v)).join(", ")}else if(clr){const h=$(`[name="${k}.kamar"]`);if(h)h.value=""}
   calcBor()});syncKamar();calcBor();calcRek24();borBayi()}
@@ -664,7 +664,7 @@ function pill(){const p=$("#pill");let t="Tersinkron ke Drive",c="";
 $("#pill").onclick=()=>S.cfg.url?sync():go("set");$("#hs").onclick=$("#pill").onclick;$("#hf").onclick=()=>{go("form");if(!$("#f [name=kepala]").value)fillForm(collect())};
 
 /* ---------- Navigasi & init ---------- */
-const APPV="v108";const render=()=>{renderDash();renderRiw()};
+const APPV="v109";const render=()=>{renderDash();renderRiw()};
 function showVer(){const el=$("#appver");if(!el)return;const set=c=>{el.textContent="Versi aplikasi: halaman "+APPV+" · cache "+c};set("-");if(window.caches&&caches.keys)caches.keys().then(k=>{const x=k.find(n=>n.indexOf("shnd-")===0);set(x?x.slice(5):"-")}).catch(()=>{})}
 function go(v){$$("section").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));$$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));if(v!=="form")render()}
 $$("nav button").forEach(b=>b.onclick=()=>{go(b.dataset.v);if(b.dataset.v==="form"&&!$("#f [name=kepala]").value){fillForm(collect());loadEx()}});
