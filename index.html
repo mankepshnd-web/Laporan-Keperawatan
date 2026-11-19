@@ -119,7 +119,7 @@ const SH=[["pagi","Pagi","07.30-13.30"],["sore","Sore","13.30-19.30"],["malam","
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const LS=k=>{try{return JSON.parse(localStorage.getItem("shnd_"+k))}catch(e){return null}};
 const S={cfg:LS("cfg")||{url:"",token:"",kepala:"",ruang:""},local:LS("local")||{},remote:LS("remote")||{},queue:LS("queue")||[],del:LS("del")||[],err:""};
-const DEF="https://script.google.com/macros/s/AKfycbx_YT3Z7L6D8cfKBcLaBFs0Bu3KZqGUvaWwUVQK7JliIUnAe9AIHr8010kvLdauLiutJw/exec";if(!S.cfg.custom)S.cfg.url=DEF;if(!RUANG.includes(S.cfg.ruang))S.cfg.ruang="";
+const DEF="https://script.google.com/macros/s/AKfycby8IVrZ82GscEJ6nZ5GuAzkT7v3qEICEeUNRQZnap6CLlbuE3l8WAfPyMZGHDWLlc2uRg/exec";if(!S.cfg.custom)S.cfg.url=DEF;if(!RUANG.includes(S.cfg.ruang))S.cfg.ruang="";
 const persist=()=>["cfg","local","remote","queue","del"].forEach(k=>localStorage.setItem("shnd_"+k,JSON.stringify(S[k])));
 const esc=s=>String(s??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const iso=d=>new Date(d.getTime()-d.getTimezoneOffset()*6e4).toISOString().slice(0,10);
@@ -449,13 +449,13 @@ function calcTot(){const D=J[curFmt];if(!D||!D.tot)return;let t=0;$$('#f [name^=
 function calcBor(){if(curFmt!=="ri")return;SH.forEach(([k])=>{{const g=f=>$(`[name="${k}.${f}"]`).value,n=f=>+g(f)||0,te=$(`[name="${k}.total"]`);te.value=["awal","masuk","rujuk","bpl","pindah","aps","meninggal"].some(f=>g(f)!=="")?n("awal")+n("masuk")-n("rujuk")-n("bpl")-n("pindah")-n("aps")-n("meninggal"):"";const to=$("#tot-"+k);if(to)to.textContent=te.value===""?"-":te.value}const t=+$(`[name="${k}.total"]`).value,c=+$(`[name="${k}.tt"]`).value;$("#plg-"+k).textContent=["bpl","pindah","aps","meninggal"].reduce((a,f)=>a+(+$(`[name="${k}.${f}"]`).value||0),0);$("#bor-"+k).textContent=c>0&&$(`[name="${k}.total"]`).value!==""?Math.round(t/c*100)+"%":"-"})}
 function collect(){const r={};$$("#f [name]").forEach(e=>{if(e.type==="radio"){if(e.checked)setP(r,e.name,e.value)}else if(e.value!=="")setP(r,e.name,e.type==="number"?+e.value:e.value.trim())});
  if(curFmt==="ri")SH.forEach(([k])=>{const x=(r[k]=r[k]||{});if(x.tt>0&&x.total!==undefined)x.bor=Math.round(x.total/x.tt*100)});r.fmt=fmtOf(r.ruang);r.ts=Date.now();return r}
-let lk=null;
+let lk=null,bts=0,dirty=false;
 const dmerge=(a,b)=>{const o={...a};for(const k in b){const x=b[k];o[k]=(x&&typeof x==="object"&&!Array.isArray(x)&&a&&a[k]&&typeof a[k]==="object")?dmerge(a[k],x):x}return o};
 function loadEx(){const t=($('[name="tanggal"]')||{}).value,rm=($('[name="ruang"]')||{}).value,ex=t&&rm&&all()[t+"|"+rm];if(ex){fillForm(ex);toast("Laporan yang sudah ada dimuat");return true}return false}
 function fillForm(r){const rm=r.ruang||S.cfg.ruang||RUANG[0];if(fmtOf(rm)!==curFmt)buildForm(fmtOf(rm));renderKamar(rm);
  if(isPol(curFmt))polBuild(r);$$("#f [name]").forEach(e=>{const x=getP(r,e.name);if(e.type==="radio")e.checked=x===e.value;else e.value=x??""});
  if(!r.tanggal)$('[name="tanggal"]').value=$("#dd").value;if(!r.kepala)$('[name="kepala"]').value=S.cfg.kepala||"";if(!r.ruang)$('[name="ruang"]').value=S.cfg.ruang||RUANG[0];{const g=roomsOf(rm),fx=TTFIX[rm];if(curFmt==="ri"){const n=fx||(g?g.reduce((a,[,it])=>a+it.length,0):"");SH.forEach(([k])=>{const e=$(`[name="${k}.tt"]`);if(!e)return;if(fx||e.value==="")e.value=n;e.readOnly=!!fx;e.tabIndex=fx?-1:0;e.style.background=fx?"#f1f5f9":"";e.style.fontWeight=fx?"700":""});if(fx){const bp=$('[name="bor_rm_p"]'),bt=$('[name="bor_rm_tt"]'),bm=$('[name="bor_rm"]');if(bt)bt.value=fx;if(bp&&bm&&bp.value!=="")bm.value=Math.round(+bp.value/fx*1000)/10}}}
-hdCito();if(curFmt==="ok"){const w=$('[name="d.awal.pagi"]');if(w&&w.value==="")w.value=prevAkhir()}calcBor();calcTot();calcPol();calcVK();pkSync(true);pySync(true);rcSync(true);calcRekap();if(curFmt==="vk"||curFmt==="polx")jgRender();polyFix();syncKamar();kpRecalc();borBayi();$$("#f .ag").forEach(e=>{e.style.height="auto";e.style.height=Math.max(e.scrollHeight,+e.dataset.min||130)+"px"});{const rmx=$('[name="ruang"]').value,kp=$('[name="kepala"]');if(KARU[rmx])kp.value=KARU[rmx];else if(KARUV.includes(kp.value))kp.value=S.cfg.kepala||""}{const x=r.tanggal&&r.ruang&&all()[r.tanggal+"|"+r.ruang];lk=x&&x.ts===r.ts?r.tanggal+"|"+r.ruang:null}}
+hdCito();if(curFmt==="ok"){const w=$('[name="d.awal.pagi"]');if(w&&w.value==="")w.value=prevAkhir()}calcBor();calcTot();calcPol();calcVK();pkSync(true);pySync(true);rcSync(true);calcRekap();jgRender();polyFix();syncKamar();kpRecalc();borBayi();$$("#f .ag").forEach(e=>{e.style.height="auto";e.style.height=Math.max(e.scrollHeight,+e.dataset.min||130)+"px"});{const rmx=$('[name="ruang"]').value,kp=$('[name="kepala"]');if(KARU[rmx])kp.value=KARU[rmx];else if(KARUV.includes(kp.value))kp.value=S.cfg.kepala||""}{const x=r.tanggal&&r.ruang&&all()[r.tanggal+"|"+r.ruang];lk=x&&x.ts===r.ts?r.tanggal+"|"+r.ruang:null;bts=r.ts||0;dirty=false}}
 function openForm(r){go("form");fillForm(r||{});scrollTo(0,0)}
 
 /* ---------- Ringkasan & teks ---------- */
@@ -685,14 +685,21 @@ $("#rx").onclick=()=>{const rs=pick().sort(asc);if(!rs.length)return toast("Tida
 $("#rp").onclick=()=>{const rs=pick().sort(asc);if(!rs.length)return toast("Tidak ada laporan pada filter ini");printRep(rs)};
 
 /* ---------- Sinkron ke Drive ---------- */
+const postRep=async r=>(await fetch(S.cfg.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({token:S.cfg.token,report:pay(r)})})).json();
 const pay=r=>{const f=fmtOf(r.ruang);return{...r,fmt:f,sheet:SHEET[f],ringkas:ring(r),teks:toText(r),cols:XC(f).map(c=>[c.g,c.l,c.f(r)??""])}};
-async function sync(){pill();if(!S.cfg.url||!navigator.onLine)return;
+const rsig=()=>Object.keys(S.remote).map(k=>k+":"+(S.remote[k].ts||0)).sort().join(","),qs=()=>{const q=window.__quiet;window.__quiet=0;return q};
+async function sync(){pill();if(!S.cfg.url||!navigator.onLine||window.__syn){window.__quiet=0;return}window.__syn=1;const sg0=rsig();
  try{for(const k of [...S.del]){const j=await(await fetch(S.cfg.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({token:S.cfg.token,action:"delete",key:k})})).json();if(!j.ok)throw j.error;S.del=S.del.filter(x=>x!==k);persist()}
-  for(const k of [...S.queue]){const r=S.local[k];if(r){const j=await(await fetch(S.cfg.url,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({token:S.cfg.token,report:pay(r)})})).json();if(!j.ok)throw j.error}S.queue=S.queue.filter(x=>x!==k);persist()}
+  for(const k of [...S.queue]){let r=S.local[k];if(r){let j=await postRep(r);if(j.ok&&j.conflict&&j.current){r=dmerge(j.current,r);r.ts=Math.max(Date.now(),(j.current.ts||0)+1);r.base=j.current.ts||0;S.local[k]=r;persist();j=await postRep(r)}if(!j.ok)throw j.error;if(j.conflict)throw"Laporan sedang diubah dari komputer lain, coba sinkron lagi"}S.queue=S.queue.filter(x=>x!==k);persist()}
   const from=iso(new Date(Date.now()-400*864e5)),j=await(await fetch(`${S.cfg.url}?action=list&from=${from}&token=${encodeURIComponent(S.cfg.token)}`)).json();if(!j.ok)throw j.error;
   S.remote={};j.reports.forEach(r=>S.remote[r.tanggal+"|"+r.ruang]=r);S.err="";persist()}
  catch(e){S.err=typeof e==="string"?e:e instanceof SyntaxError?"Apps Script membalas galat. Pastikan script dibuka dari Google Sheet (Extensions > Apps Script) lalu deploy ulang":"Tidak bisa terhubung. Di Deploy, Who has access harus Anyone"}
- pill();render();if(S.err)toast("Gagal sinkron: "+S.err)}
+ window.__syn=0;const q=qs();pill();if(!q||rsig()!==sg0||S.err)render();if(S.err&&!q)toast("Gagal sinkron: "+S.err);refreshForm()}
+function refreshForm(){const v=$("#v-form");if(!v||!v.classList.contains("on"))return;const t=($('[name="tanggal"]')||{}).value,rm=($('[name="ruang"]')||{}).value,k=t&&rm&&t+"|"+rm,x=k&&all()[k];if(!x||(x.ts||0)<=bts)return;if(dirty||document.querySelector("#jgm:not([hidden]),#kpm:not([hidden]),dialog[open]")){if(window.__nt!==x.ts){window.__nt=x.ts;toast("Ada isian terbaru dari komputer lain. Saat disimpan akan digabung otomatis")}return}fillForm(x);toast("Laporan diperbarui dari komputer lain")}
+async function pullFresh(){if(!S.cfg.url||!navigator.onLine)return;try{const c=new AbortController(),tm=setTimeout(()=>c.abort(),7000);const from=iso(new Date(Date.now()-400*864e5)),j=await(await fetch(`${S.cfg.url}?action=list&from=${from}&token=${encodeURIComponent(S.cfg.token)}`,{signal:c.signal})).json();clearTimeout(tm);if(j.ok){const n={};j.reports.forEach(r=>n[r.tanggal+"|"+r.ruang]=r);S.remote=n;persist()}}catch(e){}}
+const autoSync=()=>{if(!document.hidden){window.__quiet=1;sync()}};
+document.addEventListener("visibilitychange",autoSync);addEventListener("focus",autoSync);setInterval(autoSync,60000);
+["input","change","click"].forEach(ev=>document.addEventListener(ev,e=>{if(e.target.closest&&e.target.closest("#f,#jgm,#kpm,#dkd"))dirty=true},true));
 function pill(){const p=$("#pill");let t="Tersinkron ke Drive",c="";
  if(!S.cfg.url){t="Drive belum diatur";c="wait"}else if(S.err){t="Gagal sinkron";c="bad"}else if(S.queue.length+S.del.length){t=(S.queue.length+S.del.length)+" menunggu kirim";c="wait"}else if(!navigator.onLine)t="Offline";
  p.textContent=t;p.className=c;$("#se").textContent=S.err?"Galat: "+S.err:""}
@@ -748,12 +755,12 @@ $("#rkx").onclick=()=>{const D=rkData();if(!D.rooms.some(x=>x.n))return toast("B
   gen.push({name:nm,cols:[{g,l:"Indikator",f:r=>r[0],w:46},{g,l:"Total",f:r=>r[1]},{g,l:"Rata-rata per hari",f:r=>r[2]}],rows})});
  const a=document.createElement("a");a.href=URL.createObjectURL(makeXlsx([],gen));a.download=("Rekap_"+D.jn+"_"+D.lab).replace(/[^\w\-]+/g,"_")+".xlsx";a.click();toast("Mengunduh rekap "+D.jn.toLowerCase())};
 /* ---------- Navigasi & init ---------- */
-const APPV="v129";const render=()=>{renderDash();renderRiw();renderRkp()};
+const APPV="v133";const render=()=>{renderDash();renderRiw();renderRkp()};
 function showVer(){const el=$("#appver");if(!el)return;const set=c=>{el.textContent="Versi aplikasi: halaman "+APPV+" · cache "+c};set("-");if(window.caches&&caches.keys)caches.keys().then(k=>{const x=k.find(n=>n.indexOf("shnd-")===0);set(x?x.slice(5):"-")}).catch(()=>{})}
 function go(v){$$("section").forEach(s=>s.classList.toggle("on",s.id==="v-"+v));$$("nav button").forEach(b=>b.classList.toggle("on",b.dataset.v===v));if(v!=="form")render()}
 $$("nav button").forEach(b=>b.onclick=()=>{go(b.dataset.v);if(b.dataset.v==="form"&&!$("#f [name=kepala]").value){fillForm(collect());loadEx()}});
-$("#f").onsubmit=e=>{e.preventDefault();if(polBlok())return;let r=collect();const k=r.tanggal+"|"+r.ruang,old=all()[k];let mg=false;if(old&&lk!==k&&lk!=="reset"){r=dmerge(old,r);r.ts=Date.now();mg=true}learnDok(r);S.local[k]=r;if(mg)fillForm(r);S.del=S.del.filter(x=>x!==k);if(!S.queue.includes(k))S.queue.push(k);
- if(r.kepala){if(!KARU[r.ruang])S.cfg.kepala=r.kepala;S.cfg.ruang=r.ruang}persist();$("#dd").value=r.tanggal;toast(mg?"Laporan tersimpan (digabung dengan isian sebelumnya)":"Laporan tersimpan");go("dash");sync()};
+$("#f").onsubmit=async e=>{e.preventDefault();if(polBlok())return;if(window.__sv)return;window.__sv=1;try{await pullFresh()}catch(x){}window.__sv=0;let r=collect();const k=r.tanggal+"|"+r.ruang,old=all()[k];let mg=false;if(old&&((lk!==k&&lk!=="reset")||(lk===k&&(old.ts||0)>bts))){r=dmerge(old,r);r.ts=Date.now();mg=true}r.base=old?(old.ts||0):0;if(old&&(r.ts||0)<=(old.ts||0))r.ts=(old.ts||0)+1;learnDok(r);S.local[k]=r;if(mg)fillForm(r);S.del=S.del.filter(x=>x!==k);if(!S.queue.includes(k))S.queue.push(k);
+ if(r.kepala){if(!KARU[r.ruang])S.cfg.kepala=r.kepala;S.cfg.ruang=r.ruang}persist();$("#dd").value=r.tanggal;toast(mg?"Laporan tersimpan (digabung dengan isian sebelumnya)":"Laporan tersimpan");dirty=false;go("dash");sync()};
 $("#dd").value=iso(new Date());showVer();$("#dd").onchange=renderDash;$("#today").onclick=()=>{$("#dd").value=iso(new Date());renderDash()};
 $("#rf").innerHTML='<option value="">Semua ruang</option>'+RUANG.map(r=>`<option>${r}</option>`).join("");$("#rf").onchange=renderRiw;{const n=new Date();$("#r1").value=iso(new Date(n.getFullYear(),n.getMonth(),1));$("#r2").value=iso(n)}$("#r1").onchange=$("#r2").onchange=renderRiw;
 $("#cr").innerHTML=RUANG.map(r=>`<option>${r}</option>`).join("");
